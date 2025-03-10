@@ -1,0 +1,119 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BEC Results API",
+    "description": "API for fetching the latest BEC results of a student after verification via the Omang API.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.becresults.com/v1",
+      "description": "Production Server"
+    },
+    {
+      "url": "https://sandbox.api.becresults.com/v1",
+      "description": "Sandbox Server for Testing"
+    }
+  ],
+  "paths": {
+    "/results": {
+      "get": {
+        "summary": "Fetch Student's Latest BEC Results",
+        "description": "Retrieves the latest BEC results for a student after verifying the provided national identity number via the Omang API.",
+        "parameters": [
+          {
+            "name": "national_id",
+            "in": "query",
+            "description": "The student's national identity number for verification.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_of_birth",
+            "in": "query",
+            "description": "The student's date of birth for additional verification.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the latest BEC results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "student_id": {
+                      "type": "string",
+                      "example": "12345678"
+                    },
+                    "full_name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "national_id": {
+                      "type": "string",
+                      "example": "99010100001"
+                    },
+                    "exam_year": {
+                      "type": "integer",
+                      "example": 2024
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "subject": {
+                            "type": "string",
+                            "example": "Mathematics"
+                          },
+                          "grade": {
+                            "type": "string",
+                            "example": "A"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters."
+          },
+          "401": {
+            "description": "Unauthorized - Authentication failed."
+          },
+          "404": {
+            "description": "Student results not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
+}
