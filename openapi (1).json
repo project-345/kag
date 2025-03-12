@@ -1,0 +1,100 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BEC Results API",
+    "description": "API for fetching the latest BEC results of a student after verification via the Omang API.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.becresults.com/v1",
+      "description": "Production Server"
+    },
+    {
+      "url": "https://sandbox.api.becresults.com/v1",
+      "description": "Sandbox Server for Testing"
+    }
+  ],
+  "paths": {
+    "/results": {
+      "get": {
+        "summary": "Fetch Student's Latest BEC Results",
+        "description": "Retrieves the latest BEC results for a student after verifying the provided national identity number via the Omang API.",
+        "parameters": [
+          {
+            "name": "omang_id",
+            "in": "query",
+            "description": "The student's national identity number for verification.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "99010100001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Result"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Student results not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ExamResult": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "example": "Mathematics"
+          },
+          "grade": {
+            "type": "string",
+            "example": "A"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "No results found for the provided omang_id"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
+}
